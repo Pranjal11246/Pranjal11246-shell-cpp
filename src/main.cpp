@@ -21,13 +21,13 @@ int main() {
         parameter = input.substr(parameterSize);
       }
 
-      if(command == "exit ")break;
-      if(command=="echo "){
+      if(command == "exit")break;
+      if(command=="echo"){
         std::cout << input.substr(5) << std::endl;
         continue;  
       }
 
-      if(command == "type "){
+      if(command == "type"){
         if(parameter == "echo" || parameter=="exit" || parameter == "type" ){
           std::cout << parameter << "is a shell builtin" << std::endl;
           
