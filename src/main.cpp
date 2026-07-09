@@ -12,7 +12,7 @@ int main() {
       std::string command;
       std::getline(std::cin,command);
       if(command == "exit")break;
-      if(command.substr(0,5)=="echo"){
+      if(command.substr(0,5)=="echo "){
         std::cout << command.substr(5) << "\n" << std::endl;
         continue;  
       }
