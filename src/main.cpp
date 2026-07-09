@@ -21,7 +21,7 @@ int main() {
         parameter = input.substr(parameterSize);
       }
 
-      if(command == "exit")break;
+      if(command == "exit ")break;
       if(command=="echo "){
         std::cout << input.substr(5) << std::endl;
         continue;  
