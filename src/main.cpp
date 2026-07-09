@@ -29,7 +29,7 @@ int main() {
 
       if(command == "type"){
         if(parameter == "echo" || parameter=="exit" || parameter == "type" ){
-          std::cout << parameter << "is a shell builtin" << std::endl;
+          std::cout << parameter << " is a shell builtin" << std::endl;
           
         }else{
           std::cout << parameter << ": not found" << std::endl;
