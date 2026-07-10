@@ -1,5 +1,9 @@
 #include <iostream>
 #include <string>
+#include <filesystem>
+#include <sstream>
+#include <cstdlib>
+#include <unistd.h>
 
 int main() {
   // Flush after every std::cout / std:cerr
@@ -32,7 +36,23 @@ int main() {
           std::cout << parameter << " is a shell builtin" << std::endl;
           
         }else{
-          std::cout << parameter << ": not found" << std::endl;
+          char* path = getenv("PATH");
+          std::stringstream ss(path);
+          std::string directory;
+          bool found = false;
+          while(std::getline(ss,directory,':')){
+            std::filesystem::path fullPath = std::filesystem::path(directory)/parameter;
+
+            if(std::filesystem::exists(fullPath) && access(fullPath.string().c_str(),X_OK)==0){
+              std::cout << parameter << " is " << fullPath.string() << std::endl;
+              found = true;
+              break;
+            }
+          }
+
+          if(!found){
+            std::cout << parameter <<": not found"<<std::endl;
+          }
         }
         continue;
         
