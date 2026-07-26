@@ -45,7 +45,7 @@ int main() {
             std::filesystem::path fullPath = std::filesystem::path(directory)/parameter;
 
             if(std::filesystem::exists(fullPath) && access(fullPath.string().c_str(),X_OK)==0){
-              std::system(input.c_str());
+              std::cout << parameter << " is " << fullPath.string() << std::endl;
               found = true;
               break;
             }
@@ -58,6 +58,26 @@ int main() {
         continue;
         
       }
-      std::cout<< command << ": command not found" << std::endl;
+
+       char* path = getenv("PATH");
+          std::stringstream ss(path);
+          std::string directory;
+          bool found = false;
+          while(std::getline(ss,directory,':')){
+            std::filesystem::path fullPath = std::filesystem::path(directory)/command;
+
+            if(std::filesystem::exists(fullPath) && access(fullPath.string().c_str(),X_OK)==0){
+              std::system(input.c_str());
+              found = true;
+              break;
+            }
+          }
+
+
+          if(!found){
+            std::cout<< command << ": command not found" << std::endl;
+          }else{
+            continue;
+          }
   }
 }
