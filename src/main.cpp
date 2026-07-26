@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <unistd.h>
 
+
 int main() {
   // Flush after every std::cout / std:cerr
   std::cout << std::unitbuf;
@@ -44,7 +45,7 @@ int main() {
             std::filesystem::path fullPath = std::filesystem::path(directory)/parameter;
 
             if(std::filesystem::exists(fullPath) && access(fullPath.string().c_str(),X_OK)==0){
-              std::cout << parameter << " is " << fullPath.string() << std::endl;
+              std::system(input.c_str());
               found = true;
               break;
             }
