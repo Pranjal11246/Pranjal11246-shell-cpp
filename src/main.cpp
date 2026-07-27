@@ -62,6 +62,7 @@ int main() {
       if(command=="pwd"){
         fs::path cwd = fs::current_path();
         std::cout << cwd.string() << std::endl;
+        continue;
         
       }
 
