@@ -71,7 +71,7 @@ int main() {
         if(fs::exists(new_path)){
           fs::current_path(new_path);
         }else{
-          std::cout<< input << ": " << "No such file or directory" << std::endl;
+          std::cout<< command << ": "<< parameter << ": " << "No such file or directory" << std::endl;
         }
         continue;
 
