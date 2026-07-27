@@ -66,6 +66,13 @@ int main() {
         
       }
 
+      if(command=="cd"){
+        fs::path new_path = parameter;
+        fs::current_path(new_path);
+        continue;
+
+      }
+
        char* path = getenv("PATH");
           std::stringstream ss(path);
           std::string directory;
