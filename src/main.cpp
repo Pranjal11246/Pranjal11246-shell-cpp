@@ -69,10 +69,10 @@ int main() {
       if(command=="cd"){
         fs::path new_path = parameter;
         if(parameter=="~"){
-          char* home = std::getenv("USERPROFILE");
+          char* home = std::getenv("HOME");
           new_path = home;
         }
-        if(fs::exists(new_path)){
+        if(fs::exists(new_path) && fs::is_directory(new_path)){
           fs::current_path(new_path);
         }else{
           std::cout<< command << ": "<< parameter << ": " << "No such file or directory" << std::endl;
