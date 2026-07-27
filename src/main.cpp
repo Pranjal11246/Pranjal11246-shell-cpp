@@ -68,7 +68,11 @@ int main() {
 
       if(command=="cd"){
         fs::path new_path = parameter;
-        fs::current_path(new_path);
+        if(fs::exists(new_path)){
+          fs::current_path(new_path);
+        }else{
+          std::cout<< input << ": " << "No such file or directory" << std::endl;
+        }
         continue;
 
       }
