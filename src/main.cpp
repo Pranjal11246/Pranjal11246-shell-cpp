@@ -33,7 +33,7 @@ int main() {
       }
 
       if(command == "type"){
-        if(parameter == "echo" || parameter=="exit" || parameter == "type" ){
+        if(parameter == "echo" || parameter=="exit" || parameter == "type" || parameter=="pwd"){
           std::cout << parameter << " is a shell builtin" << std::endl;
           
         }else{
