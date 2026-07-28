@@ -6,7 +6,13 @@
 #include <unistd.h>
 #include<vector>
 #include "tokenizer.hpp"
+#include<sys/wait.h>
+#include <fstream>
+#include "command_parser.hpp"
+#include <fcntl.h>
+
 namespace fs= std::filesystem;
+using namespace std;
 
 int main() {
   // Flush after every std::cout / std:cerr
@@ -23,13 +29,33 @@ int main() {
 
       if(tokens.empty())continue;
 
+      RedirectInfo redirectInfo = parseRedirection(tokens);
+
+      vector<char*> args;
+      for(auto& token:tokens){
+        args.push_back(token.data());
+      }
+      args.push_back(nullptr);
+
+      std::ofstream outFile;
+      std::streambuf* oldBuffer = nullptr;
+
+      if (redirectInfo.redirect) {
+        outFile.open(redirectInfo.filename);
+        oldBuffer = std::cout.rdbuf(outFile.rdbuf());
+      }
+
+      bool handled=false;
+
+
       if(tokens[0] == "exit")break;
       if(tokens[0]=="echo"){
         for(int i=1;i<tokens.size();i++){
           std::cout << tokens[i] << " ";
         }
         std::cout<<std::endl;
-        continue;
+
+        handled=true;
       }
 
       if(tokens[0] == "type"){
@@ -49,20 +75,21 @@ int main() {
               found = true;
               break;
             }
+            
           }
 
           if(!found){
             std::cout << tokens[1] <<": not found"<<std::endl;
           }
         }
-        continue;
+        handled=true;
         
       }
 
       if(tokens[0]=="pwd"){
         fs::path cwd = fs::current_path();
         std::cout << cwd.string() << std::endl;
-        continue;
+        handled=true;
         
       }
 
@@ -77,8 +104,16 @@ int main() {
         }else{
           std::cout<< tokens[0] << ": "<< tokens[1] << ": " << "No such file or directory" << std::endl;
         }
-        continue;
+        handled=true;
 
+      }
+      
+      if(handled){
+        if(redirectInfo.redirect){
+              cout.rdbuf(oldBuffer);
+              outFile.close();
+          }
+        continue;
       }
 
        char* path = getenv("PATH");
@@ -89,12 +124,45 @@ int main() {
             std::filesystem::path fullPath = std::filesystem::path(directory)/tokens[0];
 
             if(std::filesystem::exists(fullPath) && access(fullPath.string().c_str(),X_OK)==0){
-              std::system(input.c_str());
+              pid_t pid = fork();
+              if(pid==0){
+                if(redirectInfo.redirect){
+                  int fd = open(
+                  redirectInfo.filename.c_str(),
+                  O_WRONLY | O_CREAT | O_TRUNC,
+                  0644
+                );
+
+                if(fd==-1){
+                  perror("open");
+                  exit(1);
+                }
+
+                if (dup2(fd, STDOUT_FILENO) == -1) {
+                      perror("dup2");
+                      exit(1);
+                }
+
+                close(fd);
+
+                }
+                execv(fullPath.string().c_str(),args.data());
+                perror("execv");
+                exit(1);
+              }else if(pid>0){
+                waitpid(pid,nullptr,0);
+              }else{
+                perror("fork");
+              }
               found = true;
               break;
             }
           }
-
+          
+          if(redirectInfo.redirect){
+              cout.rdbuf(oldBuffer);
+              outFile.close();
+          }
 
           if(!found){
             std::cout<< tokens[0] << ": command not found" << std::endl;
