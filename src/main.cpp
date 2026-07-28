@@ -42,7 +42,11 @@ int main() {
 
       if (redirectInfo.redirect) {
         outFile.open(redirectInfo.filename);
-        oldBuffer = std::cout.rdbuf(outFile.rdbuf());
+
+        if (redirectInfo.fd == STDOUT_FILENO)
+          oldBuffer = std::cout.rdbuf(outFile.rdbuf());
+        else
+          oldBuffer = std::cerr.rdbuf(outFile.rdbuf());
       }
 
       bool handled=false;
@@ -109,10 +113,15 @@ int main() {
       }
       
       if(handled){
-        if(redirectInfo.redirect){
-              cout.rdbuf(oldBuffer);
-              outFile.close();
-          }
+              if (redirectInfo.redirect) {
+                  if (redirectInfo.fd == STDOUT_FILENO)
+                      std::cout.rdbuf(oldBuffer);
+                  else
+                      std::cerr.rdbuf(oldBuffer);
+
+                  outFile.close();
+              }
+
         continue;
       }
 
@@ -138,7 +147,7 @@ int main() {
                   exit(1);
                 }
 
-                if (dup2(fd, STDOUT_FILENO) == -1) {
+                if (dup2(fd, redirectInfo.fd) == -1) {
                       perror("dup2");
                       exit(1);
                 }
@@ -160,12 +169,19 @@ int main() {
           }
           
           if(redirectInfo.redirect){
-              cout.rdbuf(oldBuffer);
-              outFile.close();
+
+                  if (redirectInfo.fd == STDOUT_FILENO)
+                      std::cout.rdbuf(oldBuffer);
+                  else
+                      std::cerr.rdbuf(oldBuffer);
+
+                  outFile.close();
+              
+
           }
 
           if(!found){
-            std::cout<< tokens[0] << ": command not found" << std::endl;
+            std::cerr<< tokens[0] << ": command not found" << std::endl;
           }else{
             continue;
           }
