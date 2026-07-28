@@ -15,7 +15,7 @@ std::vector<std::string> tokenize(const std::string &input)
         if(escaped){
             current.push_back(c);
             escaped = false;
-        }else if(c=='\\'){
+        }else if(c=='\\' && !inSingleQuotes){
             escaped = true;
         }else{
             if(c=='\'' && !inDoubleQuotes && !escaped){
