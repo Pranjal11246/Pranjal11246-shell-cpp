@@ -10,6 +10,8 @@
 #include <fstream>
 #include "command_parser.hpp"
 #include <fcntl.h>
+#include <readline/readline.h>
+#include <readline/history.h>
 
 namespace fs= std::filesystem;
 using namespace std;
@@ -21,11 +23,15 @@ int main() {
 
   // TODO: Uncomment the code below to pass the first stage
   while(true){
-       std::cout << "$ ";
-      std::string input;
-      std::getline(std::cin,input);
+       char* line = readline("$ ");
+      if (line == nullptr)break;
+
+      std::string input(line);
+      free(line);
 
       auto tokens = tokenize(input);
+
+
 
       if(tokens.empty())continue;
 

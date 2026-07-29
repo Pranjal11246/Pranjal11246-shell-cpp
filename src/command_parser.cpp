@@ -30,7 +30,6 @@ RedirectInfo parseRedirection(std::vector<std::string>& tokens){
             return {true,fd,true,filename};
         }
 
-        
 
     }
 
