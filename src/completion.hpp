@@ -20,6 +20,7 @@ namespace Completion
 
 
     std::vector<std::string> getBuiltins();
+    std::vector<std::string> getExecutables();
 
     std::string getCurrentWord(const std::string& line,int cursorPos);
 
