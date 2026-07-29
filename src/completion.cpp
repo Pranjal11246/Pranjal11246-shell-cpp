@@ -38,6 +38,14 @@ char** completionCallback(
 
     const CompletionContext ctx = buildContext(line, end);
     matches = Completion::getCompletions(ctx);
+    rl_completion_append_character = ' ';
+
+    if (matches.size() == 1 &&
+        !matches[0].empty() &&
+        matches[0].back() == '/')
+    {
+        rl_completion_append_character = '\0';
+    }
 
     return rl_completion_matches("", commandGenerator);
 }
