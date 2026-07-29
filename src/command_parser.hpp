@@ -7,6 +7,7 @@
 struct RedirectInfo {
     bool redirect = false;
     int fd = STDOUT_FILENO;
+    bool append = false;
     std::string filename;
 };
 

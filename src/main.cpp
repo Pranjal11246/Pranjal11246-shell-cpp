@@ -41,7 +41,12 @@ int main() {
       std::streambuf* oldBuffer = nullptr;
 
       if (redirectInfo.redirect) {
-        outFile.open(redirectInfo.filename);
+        if (redirectInfo.append)
+            outFile.open(redirectInfo.filename,std::ios::out | std::ios::app);
+            
+        else
+            outFile.open(redirectInfo.filename,std::ios::out | std::ios::trunc);
+            
 
         if (redirectInfo.fd == STDOUT_FILENO)
           oldBuffer = std::cout.rdbuf(outFile.rdbuf());
@@ -83,7 +88,7 @@ int main() {
           }
 
           if(!found){
-            std::cout << tokens[1] <<": not found"<<std::endl;
+            std::cerr << tokens[1] <<": not found"<<std::endl;
           }
         }
         handled=true;
@@ -106,7 +111,7 @@ int main() {
         if(fs::exists(new_path) && fs::is_directory(new_path)){
           fs::current_path(new_path);
         }else{
-          std::cout<< tokens[0] << ": "<< tokens[1] << ": " << "No such file or directory" << std::endl;
+          std::cerr<< tokens[0] << ": "<< tokens[1] << ": " << "No such file or directory" << std::endl;
         }
         handled=true;
 
@@ -136,9 +141,17 @@ int main() {
               pid_t pid = fork();
               if(pid==0){
                 if(redirectInfo.redirect){
+
+                  int flags = O_WRONLY | O_CREAT;
+
+                  if (redirectInfo.append)
+                      flags |= O_APPEND;
+                  else
+                      flags |= O_TRUNC;
+
                   int fd = open(
                   redirectInfo.filename.c_str(),
-                  O_WRONLY | O_CREAT | O_TRUNC,
+                  flags,
                   0644
                 );
 

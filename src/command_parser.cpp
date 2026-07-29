@@ -8,19 +8,31 @@ RedirectInfo parseRedirection(std::vector<std::string>& tokens){
             filename = tokens[i+1];
             tokens.erase(tokens.begin()+i);
             tokens.erase(tokens.begin()+i);
-            return {true,fd,filename};
+            return {true,fd,false,filename};
             
         }else if(tokens[i]=="2>"){
             fd = STDERR_FILENO;
             filename = tokens[i+1];
             tokens.erase(tokens.begin()+i);
             tokens.erase(tokens.begin()+i); 
-            return {true,fd,filename};
+            return {true,fd,false,filename};
+        }else if(tokens[i]==">>"){
+            fd = STDOUT_FILENO;
+            filename = tokens[i+1];
+            tokens.erase(tokens.begin()+i);
+            tokens.erase(tokens.begin()+i);
+            return {true,fd,true,filename};
+        }else if(tokens[i]=="2>"){
+            fd = STDERR_FILENO;
+            filename = tokens[i+1];
+            tokens.erase(tokens.begin()+i);
+            tokens.erase(tokens.begin()+i);
+            return {true,fd,true,filename};
         }
 
         
 
     }
 
-    return {false,fd,""};
+    return {false,fd,false,""};
 }
