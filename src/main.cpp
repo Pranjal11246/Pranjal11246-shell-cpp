@@ -12,6 +12,7 @@
 #include <fcntl.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include "completion.hpp"
 
 namespace fs= std::filesystem;
 using namespace std;
@@ -22,6 +23,8 @@ int main() {
   std::cerr << std::unitbuf;
 
   // TODO: Uncomment the code below to pass the first stage
+  
+  rl_attempted_completion_function = completionCallback;
   while(true){
        char* line = readline("$ ");
       if (line == nullptr)break;
