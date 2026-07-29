@@ -7,6 +7,8 @@
 #include <sstream>
 #include <unistd.h>
 #include <cstdlib>
+#include "filesystem_provider.hpp"
+#include "directory_provider.hpp"
 namespace fs = std::filesystem;
 
 static std::vector<std::string> matches;
@@ -34,7 +36,8 @@ char** completionCallback(
 
     std::string line(rl_line_buffer);
 
-    matches = Completion::getCompletions(line, end);
+    const CompletionContext ctx = buildContext(line, end);
+    matches = Completion::getCompletions(ctx);
 
     return rl_completion_matches("", commandGenerator);
 }
@@ -50,33 +53,47 @@ std::vector<std::string> getBuiltins()
     };
 }
 
-std::vector<std::string> matchPrefix(const std::vector<std::string>& choices,const std::string& prefix){
-    std::vector<std::string> res;
-    for(auto const& choice:choices){
-        if(choice.starts_with(prefix))res.push_back(choice);
+
+
+
+std::vector<std::string> getCompletions(const CompletionContext& ctx)
+{
+    if (ctx.firstToken)
+    {
+        std::vector<std::string> finalVec = getBuiltins();
+
+        auto executables = getExecutables();
+
+        finalVec.insert(
+            finalVec.end(),
+            executables.begin(),
+            executables.end()
+        );
+
+        std::erase_if(finalVec, [&](const std::string& s) {
+            return !s.starts_with(ctx.token);
+        });
+
+        std::sort(finalVec.begin(), finalVec.end());
+
+        finalVec.erase(
+            std::unique(finalVec.begin(), finalVec.end()),
+            finalVec.end()
+        );
+
+        return finalVec;
     }
-    return res;
-}
 
-std::string getCurrentWord(const std::string& line,int cursorPos){
-    int i = cursorPos-1;
-    std::string res="";
-    while(i>=0){
-        if(line[i]==' ')break;
-        res+=line[i];
-        i--;
+    std::istringstream iss(ctx.line);
+    std::string command;
+    iss >> command;
+
+    if (command == "cd")
+    {
+        return DirectoryProvider::getCompletions(ctx);
     }
 
-    std::reverse(res.begin(),res.end());
-    return res;
-}
-
-std::vector<std::string> getCompletions(const std::string& line,int cursorPos){
-    std::string prefix = getCurrentWord(line, cursorPos);
-    std::vector<std::string> finalVec = getBuiltins();
-    std::vector<std::string> executables = getExecutables();
-    finalVec.insert(finalVec.end(),executables.begin(),executables.end());
-    return matchPrefix(finalVec,prefix);
+    return FilesystemProvider::getCompletions(ctx);
 }
 
 std::vector<std::string> getExecutables()

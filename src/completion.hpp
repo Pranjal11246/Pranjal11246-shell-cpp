@@ -2,14 +2,14 @@
 
 #include <string>
 #include <vector>
+#include "completion_context.hpp"
 
 char** completionCallback(const char* text,int start,int end);
 namespace Completion
 {
 
     std::vector<std::string> getCompletions(
-        const std::string& line,
-        int cursorPos
+        const CompletionContext& ctx
     );
 
 
@@ -22,7 +22,6 @@ namespace Completion
     std::vector<std::string> getBuiltins();
     std::vector<std::string> getExecutables();
 
-    std::string getCurrentWord(const std::string& line,int cursorPos);
 
 
 }
