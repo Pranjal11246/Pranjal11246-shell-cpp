@@ -15,6 +15,7 @@
 #include "completion.hpp"
 #include "completion_registry.hpp"
 #include "job_manager.hpp"
+#include <iomanip>
 
 namespace fs= std::filesystem;
 using namespace std;
@@ -149,21 +150,24 @@ int main() {
           handled = true;
       }
       if (tokens[0] == "jobs"){
-          for (const auto& job : JobManager::jobs()){
-            std::cout
-                << "[" << job.id << "] ";
+          const auto& jobs = JobManager::jobs();
 
-            if (job.state == JobState::Running)
-                std::cout << "Running ";
-            else
-                std::cout << "Done ";
+          for (size_t i = 0; i < jobs.size(); ++i)
+          {
+              const auto& job = jobs[i];
 
-            std::cout
-                << job.command
-                << '\n';
-        }
+              std::cout
+                  << "[" << job.id << "]"
+                  << JobManager::marker(i)
+                  << "  "
+                  << std::left
+                  << std::setw(24)
+                  << (job.state == JobState::Running ? "Running" : "Done")
+                  << job.command
+                  << '\n';
+          }
 
-        handled = true;
+          handled = true;
       }
 
       if(tokens[0] == "type"){
@@ -283,17 +287,8 @@ int main() {
                 exit(1);
               }else if(pid>0){
                 if (background){
-                  std::string command;
 
-                  for (size_t i = 0; i < tokens.size(); ++i)
-                  {
-                      if (i > 0)
-                          command += " ";
-
-                      command += tokens[i];
-                  }
-
-                  JobManager::add(pid, command);
+                  JobManager::add(pid, input);
 
                   const Job& job = JobManager::jobs().back();
 

@@ -43,3 +43,11 @@ void JobManager::markDone(pid_t pid){
     if (job)
         job->state = JobState::Done;
 }
+
+char JobManager::marker(size_t index){
+    if (index + 1 == jobList.size())return '+';
+
+    if (index + 2 == jobList.size())return '-';
+
+    return ' ';
+}

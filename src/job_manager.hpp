@@ -15,4 +15,6 @@ namespace JobManager
     Job* find(pid_t pid);
 
     void markDone(pid_t pid);
+
+    char marker(size_t index);
 }
