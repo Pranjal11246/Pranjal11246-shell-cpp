@@ -54,35 +54,7 @@ char JobManager::marker(size_t index){
     return ' ';
 }
 
-std::vector<ReapedJob> JobManager::reapFinishedJobs()
-{
-    std::vector<ReapedJob> finished;
 
-    for (auto it = jobList.begin(); it != jobList.end();)
-    {
-        int status;
-        pid_t result = waitpid(it->pid, &status, WNOHANG);
-
-        if (result > 0 && WIFEXITED(status))
-        {
-            char m = marker(std::distance(jobList.begin(), it));
-
-            Job done = *it;
-            done.state = JobState::Done;
-
-            finished.push_back({done, m});
-
-
-            it = jobList.erase(it);
-        }
-        else
-        {
-            ++it;
-        }
-    }
-
-    return finished;
-}
 
 void JobManager::refreshJobs()
 {
@@ -114,4 +86,26 @@ void JobManager::removeDoneJobs()
             ++it;
         }
     }
+}
+
+std::vector<ReapedJob> JobManager::reapFinishedJobs()
+{
+    refreshJobs();
+
+    std::vector<ReapedJob> finished;
+
+    for (size_t i = 0; i < jobList.size(); ++i)
+    {
+        if (jobList[i].state == JobState::Done)
+        {
+            finished.push_back({
+                jobList[i],
+                marker(i)
+            });
+        }
+    }
+
+    removeDoneJobs();
+
+    return finished;
 }

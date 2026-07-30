@@ -21,6 +21,7 @@ namespace JobManager
     std::vector<ReapedJob> reapFinishedJobs();
 
     void refreshJobs();
-    
+
     void removeDoneJobs();
+
 }

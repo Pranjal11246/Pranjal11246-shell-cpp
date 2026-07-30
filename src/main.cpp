@@ -28,8 +28,33 @@ int main() {
   // TODO: Uncomment the code below to pass the first stage
   
   rl_attempted_completion_function = completionCallback;
+  
   while(true){
-       char* line = readline("$ ");
+
+    auto finished = JobManager::reapFinishedJobs();
+
+    for (const auto& reaped : finished)
+    {
+        std::string command = reaped.job.command;
+
+        if (command.size() >= 2 &&
+            command.compare(command.size() - 2, 2, " &") == 0)
+        {
+            command.erase(command.size() - 2);
+        }
+
+        std::cout
+            << "[" << reaped.job.id << "]"
+            << reaped.marker
+            << "  "
+            << std::left
+            << std::setw(21)
+            << "Done"
+            << command
+            << '\n';
+    }
+    
+      char* line = readline("$ ");
       if (line == nullptr)break;
 
       std::string input(line);
@@ -149,53 +174,47 @@ int main() {
 
           handled = true;
       }
-      if (tokens[0] == "jobs"){
+      if (tokens[0] == "jobs")
+      {
+          auto finished = JobManager::reapFinishedJobs();
 
-        JobManager::refreshJobs();
+          for (const auto& reaped : finished)
+          {
+              std::string command = reaped.job.command;
 
-        const auto& jobs = JobManager::jobs();
+              if (command.size() >= 2 &&
+                  command.compare(command.size() - 2, 2, " &") == 0)
+              {
+                  command.erase(command.size() - 2);
+              }
 
-        for (size_t i = 0; i < jobs.size(); ++i)
-        {
-            const Job& job = jobs[i];
+              std::cout
+                  << "[" << reaped.job.id << "]"
+                  << reaped.marker
+                  << "  "
+                  << std::left
+                  << std::setw(21)
+                  << "Done"
+                  << command
+                  << '\n';
+          }
 
-            std::string command = job.command;
+          for (size_t i = 0; i < JobManager::jobs().size(); ++i)
+          {
+              const Job& job = JobManager::jobs()[i];
 
-            if (job.state == JobState::Done)
-            {
-                // Remove trailing " &"
-                if (command.size() >= 2 &&
-                    command.compare(command.size() - 2, 2, " &") == 0)
-                {
-                    command.erase(command.size() - 2);
-                }
+              std::cout
+                  << "[" << job.id << "]"
+                  << JobManager::marker(i)
+                  << "  "
+                  << std::left
+                  << std::setw(21)
+                  << "Running"
+                  << job.command
+                  << '\n';
+          }
 
-                std::cout
-                    << "[" << job.id << "]"
-                    << JobManager::marker(i)
-                    << "  "
-                    << std::left
-                    << std::setw(21)
-                    << "Done"
-                    << command
-                    << '\n';
-            }
-            else
-            {
-                std::cout
-                    << "[" << job.id << "]"
-                    << JobManager::marker(i)
-                    << "  "
-                    << std::left
-                    << std::setw(21)
-                    << "Running"
-                    << command
-                    << '\n';
-            }
-        }
-
-        JobManager::removeDoneJobs();
-        handled = true;
+          handled = true;
       }
 
       if(tokens[0] == "type"){
