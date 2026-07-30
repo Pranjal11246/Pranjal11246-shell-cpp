@@ -1,5 +1,6 @@
 #include "job_manager.hpp"
 #include <algorithm>
+#include <sys/wait.h>
 
 namespace
 {
@@ -10,6 +11,7 @@ namespace
 void JobManager::add(pid_t pid, const std::string& command){
     jobList.push_back({nextJobId++,pid,command});
 }
+
 
 const std::vector<Job>& JobManager::jobs(){
     return jobList;
@@ -50,4 +52,34 @@ char JobManager::marker(size_t index){
     if (index + 2 == jobList.size())return '-';
 
     return ' ';
+}
+
+std::vector<ReapedJob> JobManager::reapFinishedJobs()
+{
+    std::vector<ReapedJob> finished;
+
+    for (auto it = jobList.begin(); it != jobList.end();)
+    {
+        int status;
+        pid_t result = waitpid(it->pid, &status, WNOHANG);
+
+        if (result > 0 && WIFEXITED(status))
+        {
+            char m = marker(std::distance(jobList.begin(), it));
+
+            Job done = *it;
+            done.state = JobState::Done;
+
+            finished.push_back({done, m});
+
+
+            it = jobList.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+    }
+
+    return finished;
 }

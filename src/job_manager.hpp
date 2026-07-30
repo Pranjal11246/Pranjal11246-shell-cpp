@@ -17,4 +17,6 @@ namespace JobManager
     void markDone(pid_t pid);
 
     char marker(size_t index);
+
+    std::vector<ReapedJob> reapFinishedJobs();
 }

@@ -16,3 +16,9 @@ struct Job
     std::string command;
     JobState state = JobState::Running;
 };
+
+struct ReapedJob
+{
+    Job job;
+    char marker;
+};

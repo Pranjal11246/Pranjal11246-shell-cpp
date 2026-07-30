@@ -150,6 +150,21 @@ int main() {
           handled = true;
       }
       if (tokens[0] == "jobs"){
+
+         auto finished = JobManager::reapFinishedJobs();
+
+        for (const auto& reaped : finished){
+            std::cout
+                << "[" << reaped.job.id << "]"
+                << reaped.marker
+                << "  "
+                << std::left
+                << std::setw(24)
+                << "Done"
+                << reaped.job.command
+                << '\n';
+        }
+
           const auto& jobs = JobManager::jobs();
 
           for (size_t i = 0; i < jobs.size(); ++i)
