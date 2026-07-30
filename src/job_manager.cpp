@@ -5,11 +5,22 @@
 namespace
 {
     std::vector<Job> jobList;
-    int nextJobId = 1;
 }
 
-void JobManager::add(pid_t pid, const std::string& command){
-    jobList.push_back({nextJobId++,pid,command});
+void JobManager::add(pid_t pid, const std::string& command)
+{
+    int id;
+
+    if (jobList.empty())
+    {
+        id = 1;
+    }
+    else
+    {
+        id = jobList.back().id + 1;
+    }
+
+    jobList.push_back({id, pid, command});
 }
 
 
