@@ -57,7 +57,8 @@ std::vector<std::string> getBuiltins()
         "exit",
         "type",
         "pwd",
-        "cd"
+        "cd",
+        "complete"
     };
 }
 
