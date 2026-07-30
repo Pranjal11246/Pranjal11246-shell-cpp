@@ -13,12 +13,18 @@ std::vector<std::string> run(const CompletionSpec& spec,const CompletionContext&
     std::string command = spec.script;
 
     auto tokens = tokenize(ctx.line);
-    for (const auto& token : tokens)
+    std::string commandName = tokens.empty() ? "" : tokens[0];
+    std::string currentWord = ctx.token;
+    std::string previousWord = "";
+
+    if (tokens.size() >= 2)
     {
-        command += " '";
-        command += token;
-        command += "'";
+        previousWord = tokens[tokens.size() - 2];
     }
+
+    command += " '" + commandName + "'";
+    command += " '" + currentWord + "'";
+    command += " '" + previousWord + "'";
 
     setenv("COMP_LINE", ctx.line.c_str(), 1);
 
