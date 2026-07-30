@@ -35,10 +35,14 @@ bool executeBuiltin(const std::vector<std::string>& tokens,bool& shouldExit)
 
       if(tokens[0]=="echo"){
         for(int i=1;i<tokens.size();i++){
-          std::cout << tokens[i] << " ";
-        }
-        std::cout<<std::endl;
+            std::cout << tokens[i];
 
+            if(i!=tokens.size()-1){
+                std::cout << " ";
+            }
+        }
+
+        std::cout << std::endl;
         return true;
       }
 
