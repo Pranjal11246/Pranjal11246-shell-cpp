@@ -77,7 +77,7 @@ int main() {
       }
 
       if(tokens[0] == "type"){
-        if(tokens[1] == "echo" || tokens[1]=="exit" || tokens[1] == "type" || tokens[1]=="pwd"){
+        if(tokens[1] == "echo" || tokens[1]=="exit" || tokens[1] == "type" || tokens[1]=="pwd" || tokens[1] == "complete"){
           std::cout << tokens[1] << " is a shell builtin" << std::endl;
           
         }else{
