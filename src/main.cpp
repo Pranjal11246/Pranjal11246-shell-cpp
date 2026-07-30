@@ -154,14 +154,22 @@ int main() {
          auto finished = JobManager::reapFinishedJobs();
 
         for (const auto& reaped : finished){
+            std::string command = reaped.job.command;
+
+            if (command.size() >= 2 &&
+                command.compare(command.size() - 2, 2, " &") == 0)
+            {
+                command.erase(command.size() - 2);
+            }
+
             std::cout
                 << "[" << reaped.job.id << "]"
                 << reaped.marker
                 << "  "
                 << std::left
-                << std::setw(24)
+                << std::setw(21)
                 << "Done"
-                << reaped.job.command
+                << command
                 << '\n';
         }
 
