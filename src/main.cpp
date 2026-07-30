@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <algorithm>
 #include <filesystem>
 #include <sstream>
 #include <cstdlib>
@@ -16,6 +17,7 @@
 #include "completion_registry.hpp"
 #include "job_manager.hpp"
 #include <iomanip>
+#include "pipeline.hpp"
 
 namespace fs= std::filesystem;
 using namespace std;
@@ -62,6 +64,11 @@ int main() {
 
       auto tokens = tokenize(input);
 
+      bool hasPipe = std::find(tokens.begin(), tokens.end(), "|") != tokens.end();
+      if(hasPipe){
+        executePipeline(tokens);
+        continue;
+      }
 
 
       if(tokens.empty())continue;
