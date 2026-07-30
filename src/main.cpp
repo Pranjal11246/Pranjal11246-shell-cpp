@@ -112,7 +112,7 @@ int main() {
                       }
                       else
                       {
-                          std::cout << "complete: "<<spec->command<<": no completion specification\n";
+                          std::cout << "complete: "<<tokens[2]<<": no completion specification\n";
                       }
                   }
               }
