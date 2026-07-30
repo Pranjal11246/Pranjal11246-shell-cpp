@@ -9,6 +9,8 @@
 #include <cstdlib>
 #include "filesystem_provider.hpp"
 #include "directory_provider.hpp"
+#include "script_provider.hpp"
+#include "completion_registry.hpp"
 namespace fs = std::filesystem;
 
 static std::vector<std::string> matches;
@@ -38,6 +40,7 @@ char** completionCallback(
 
     const CompletionContext ctx = buildContext(line, end);
     matches = Completion::getCompletions(ctx);
+    rl_attempted_completion_over = 1;
     rl_completion_append_character = ' ';
 
     if (matches.size() == 1 &&
@@ -98,10 +101,14 @@ std::vector<std::string> getCompletions(const CompletionContext& ctx)
     iss >> command;
 
     if (command == "cd")
-    {
+        {
         return DirectoryProvider::getCompletions(ctx);
-    }
+        }
 
+    if (const auto* spec = CompletionRegistry::find(command))
+        {
+        return ScriptProvider::run(*spec, ctx);
+        }
     return FilesystemProvider::getCompletions(ctx);
 }
 

@@ -13,6 +13,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "completion.hpp"
+#include "completion_registry.hpp"
 
 namespace fs= std::filesystem;
 using namespace std;
@@ -76,8 +77,76 @@ int main() {
         handled=true;
       }
 
+      if (tokens[0] == "complete")
+      {
+          if (tokens.size() >= 2)
+          {
+              if (tokens[1] == "-p")
+              {
+                  if (tokens.size() == 2)
+                  {
+                      auto specs = CompletionRegistry::list();
+
+                      for (const auto& spec : specs)
+                      {
+                          std::cout
+                              << "complete -C '"
+                              << spec.script
+                              << "' "
+                              << spec.command
+                              << '\n';
+                      }
+                  }
+                  else if (tokens.size() == 3)
+                  {
+                      auto spec = CompletionRegistry::find(tokens[2]);
+
+                      if (spec)
+                      {
+                          std::cout
+                              << "complete -C '"
+                              << spec->script
+                              << "' "
+                              << spec->command
+                              << '\n';
+                      }
+                      else
+                      {
+                          std::cout << "complete: no completion specification\n";
+                      }
+                  }
+              }
+
+              else if (tokens[1] == "-C")
+              {
+                  if (tokens.size() >= 4)
+                  {
+                      CompletionRegistry::registerCompletion(
+                          tokens[3],
+                          tokens[2]
+                      );
+                  }
+              }
+
+              else if (tokens[1] == "-r")
+              {
+                  if (tokens.size() >= 3)
+                  {
+                      CompletionRegistry::unregisterCompletion(tokens[2]);
+                  }
+              }
+          }
+
+          handled = true;
+      }
+
       if(tokens[0] == "type"){
-        if(tokens[1] == "echo" || tokens[1]=="exit" || tokens[1] == "type" || tokens[1]=="pwd" || tokens[1] == "complete"){
+
+        if (tokens.size() < 2)
+        {
+            handled = true;
+        }
+        if(tokens[1] == "echo" || tokens[1]=="exit" || tokens[1] == "type" || tokens[1]=="pwd" || tokens[1] == "complete" || tokens[1]=="cd"){
           std::cout << tokens[1] << " is a shell builtin" << std::endl;
           
         }else{
@@ -112,6 +181,10 @@ int main() {
       }
 
       if(tokens[0]=="cd"){
+        if (tokens.size() < 2)
+        {
+            handled = true;
+        }
         fs::path new_path = tokens[1];
         if(tokens[1]=="~"){
           char* home = std::getenv("HOME");
