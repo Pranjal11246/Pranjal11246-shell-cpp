@@ -19,4 +19,8 @@ namespace JobManager
     char marker(size_t index);
 
     std::vector<ReapedJob> reapFinishedJobs();
+
+    void refreshJobs();
+    
+    void removeDoneJobs();
 }

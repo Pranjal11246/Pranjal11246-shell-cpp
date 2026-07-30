@@ -151,46 +151,51 @@ int main() {
       }
       if (tokens[0] == "jobs"){
 
-         auto finished = JobManager::reapFinishedJobs();
+        JobManager::refreshJobs();
 
-        for (const auto& reaped : finished){
-            std::string command = reaped.job.command;
+        const auto& jobs = JobManager::jobs();
 
-            if (command.size() >= 2 &&
-                command.compare(command.size() - 2, 2, " &") == 0)
+        for (size_t i = 0; i < jobs.size(); ++i)
+        {
+            const Job& job = jobs[i];
+
+            std::string command = job.command;
+
+            if (job.state == JobState::Done)
             {
-                command.erase(command.size() - 2);
-            }
+                // Remove trailing " &"
+                if (command.size() >= 2 &&
+                    command.compare(command.size() - 2, 2, " &") == 0)
+                {
+                    command.erase(command.size() - 2);
+                }
 
-            std::cout
-                << "[" << reaped.job.id << "]"
-                << reaped.marker
-                << "  "
-                << std::left
-                << std::setw(21)
-                << "Done"
-                << command
-                << '\n';
+                std::cout
+                    << "[" << job.id << "]"
+                    << JobManager::marker(i)
+                    << "  "
+                    << std::left
+                    << std::setw(21)
+                    << "Done"
+                    << command
+                    << '\n';
+            }
+            else
+            {
+                std::cout
+                    << "[" << job.id << "]"
+                    << JobManager::marker(i)
+                    << "  "
+                    << std::left
+                    << std::setw(21)
+                    << "Running"
+                    << command
+                    << '\n';
+            }
         }
 
-          const auto& jobs = JobManager::jobs();
-
-          for (size_t i = 0; i < jobs.size(); ++i)
-          {
-              const auto& job = jobs[i];
-
-              std::cout
-                  << "[" << job.id << "]"
-                  << JobManager::marker(i)
-                  << "  "
-                  << std::left
-                  << std::setw(24)
-                  << (job.state == JobState::Running ? "Running" : "Done")
-                  << job.command
-                  << '\n';
-          }
-
-          handled = true;
+        JobManager::removeDoneJobs();
+        handled = true;
       }
 
       if(tokens[0] == "type"){

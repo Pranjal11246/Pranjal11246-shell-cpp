@@ -83,3 +83,35 @@ std::vector<ReapedJob> JobManager::reapFinishedJobs()
 
     return finished;
 }
+
+void JobManager::refreshJobs()
+{
+    for (Job& job : jobList)
+    {
+        if (job.state == JobState::Done)
+            continue;
+
+        int status;
+        pid_t result = waitpid(job.pid, &status, WNOHANG);
+
+        if (result > 0 && (WIFEXITED(status) || WIFSIGNALED(status)))
+        {
+            job.state = JobState::Done;
+        }
+    }
+}
+
+void JobManager::removeDoneJobs()
+{
+    for (auto it = jobList.begin(); it != jobList.end();)
+    {
+        if (it->state == JobState::Done)
+        {
+            it = jobList.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+    }
+}
