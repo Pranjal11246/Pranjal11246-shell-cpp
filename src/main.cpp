@@ -14,6 +14,7 @@
 #include <readline/history.h>
 #include "completion.hpp"
 #include "completion_registry.hpp"
+#include "job_manager.hpp"
 
 namespace fs= std::filesystem;
 using namespace std;
@@ -40,12 +41,20 @@ int main() {
       if(tokens.empty())continue;
 
       RedirectInfo redirectInfo = parseRedirection(tokens);
+      bool background = false;
+
+      if (!tokens.empty() && tokens.back() == "&"){
+          background = true;
+          tokens.pop_back();
+      }
 
       vector<char*> args;
       for(auto& token:tokens){
         args.push_back(token.data());
       }
       args.push_back(nullptr);
+
+
 
       std::ofstream outFile;
       std::streambuf* oldBuffer = nullptr;
@@ -140,7 +149,21 @@ int main() {
           handled = true;
       }
       if (tokens[0] == "jobs"){
-          handled = true;
+          for (const auto& job : JobManager::jobs()){
+            std::cout
+                << "[" << job.id << "] ";
+
+            if (job.state == JobState::Running)
+                std::cout << "Running ";
+            else
+                std::cout << "Done ";
+
+            std::cout
+                << job.command
+                << '\n';
+        }
+
+        handled = true;
       }
 
       if(tokens[0] == "type"){
@@ -215,6 +238,8 @@ int main() {
         continue;
       }
 
+
+
        char* path = getenv("PATH");
           std::stringstream ss(path);
           std::string directory;
@@ -257,7 +282,28 @@ int main() {
                 perror("execv");
                 exit(1);
               }else if(pid>0){
-                waitpid(pid,nullptr,0);
+                if (background){
+                  std::string command;
+
+                  for (size_t i = 0; i < tokens.size(); ++i)
+                  {
+                      if (i > 0)
+                          command += " ";
+
+                      command += tokens[i];
+                  }
+
+                  JobManager::add(pid, command);
+
+                  const Job& job = JobManager::jobs().back();
+
+                  std::cout
+                      << "[" << job.id << "] "
+                      << job.pid << '\n';
+              }
+                else{
+                    waitpid(pid, nullptr, 0);
+                }
               }else{
                 perror("fork");
               }

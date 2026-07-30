@@ -11,4 +11,8 @@ namespace JobManager
     void remove(pid_t pid);
 
     const std::vector<Job>& jobs();
+
+    Job* find(pid_t pid);
+
+    void markDone(pid_t pid);
 }

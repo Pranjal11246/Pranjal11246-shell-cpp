@@ -26,3 +26,20 @@ void JobManager::remove(pid_t pid){
             }),
         jobList.end());
 }
+
+Job* JobManager::find(pid_t pid){
+    for (auto& job : jobList)
+    {
+        if (job.pid == pid)
+            return &job;
+    }
+
+    return nullptr;
+}
+
+void JobManager::markDone(pid_t pid){
+    Job* job = find(pid);
+
+    if (job)
+        job->state = JobState::Done;
+}
