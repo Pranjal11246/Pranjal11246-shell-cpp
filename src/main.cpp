@@ -176,44 +176,44 @@ int main() {
       }
       if (tokens[0] == "jobs")
       {
-          auto finished = JobManager::reapFinishedJobs();
+          JobManager::refreshJobs();
 
-          for (const auto& reaped : finished)
+          const auto& jobs = JobManager::jobs();
+
+          for (size_t i = 0; i < jobs.size(); ++i)
           {
-              std::string command = reaped.job.command;
+              const Job& job = jobs[i];
 
-              if (command.size() >= 2 &&
-                  command.compare(command.size() - 2, 2, " &") == 0)
+              std::string command = job.command;
+              std::string state;
+
+              if (job.state == JobState::Done)
               {
-                  command.erase(command.size() - 2);
+                  state = "Done";
+
+                  if (command.size() >= 2 &&
+                      command.compare(command.size() - 2, 2, " &") == 0)
+                  {
+                      command.erase(command.size() - 2);
+                  }
               }
-
-              std::cout
-                  << "[" << reaped.job.id << "]"
-                  << reaped.marker
-                  << "  "
-                  << std::left
-                  << std::setw(21)
-                  << "Done"
-                  << command
-                  << '\n';
-          }
-
-          for (size_t i = 0; i < JobManager::jobs().size(); ++i)
-          {
-              const Job& job = JobManager::jobs()[i];
+              else
+              {
+                  state = "Running";
+              }
 
               std::cout
                   << "[" << job.id << "]"
                   << JobManager::marker(i)
                   << "  "
                   << std::left
-                  << std::setw(21)
-                  << "Running"
-                  << job.command
+                  << std::setw(24)
+                  << state
+                  << command
                   << '\n';
           }
 
+          JobManager::removeDoneJobs();
           handled = true;
       }
 
