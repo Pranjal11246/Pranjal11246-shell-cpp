@@ -10,6 +10,7 @@
 #include <sstream>
 #include <filesystem>
 #include <iostream>
+#include "builtin.hpp"
 
 std::vector<char*> makeArgs(const std::vector<std::string>& command)
 {
@@ -75,6 +76,7 @@ void executePipeline(const std::vector<std::string>& tokens)
     {
         close(pipefd[0]);
         close(pipefd[1]);
+
         perror("fork");
         return;
     }
@@ -88,6 +90,12 @@ void executePipeline(const std::vector<std::string>& tokens)
 
         close(pipefd[0]);
         close(pipefd[1]);
+
+        if (isBuiltin(left[0])){
+            bool shouldExit = false;
+            executeBuiltin(left, shouldExit);
+            _exit(0);
+        }
 
         auto args = makeArgs(left);
 
@@ -124,6 +132,12 @@ if (rightPid == 0){
 
         close(pipefd[0]);
         close(pipefd[1]);
+
+        if (isBuiltin(right[0])){
+            bool shouldExit = false;
+            executeBuiltin(right, shouldExit);
+            _exit(0);
+        }
 
         auto args = makeArgs(right);
 
