@@ -139,6 +139,9 @@ int main() {
 
           handled = true;
       }
+      if (tokens[0] == "jobs"){
+          handled = true;
+      }
 
       if(tokens[0] == "type"){
 
@@ -146,7 +149,7 @@ int main() {
         {
             handled = true;
         }
-        if(tokens[1] == "echo" || tokens[1]=="exit" || tokens[1] == "type" || tokens[1]=="pwd" || tokens[1] == "complete" || tokens[1]=="cd"){
+        if(tokens[1] == "echo" || tokens[1]=="exit" || tokens[1] == "type" || tokens[1]=="pwd" || tokens[1] == "complete" || tokens[1]=="cd" || tokens[1]=="jobs"){
           std::cout << tokens[1] << " is a shell builtin" << std::endl;
           
         }else{
