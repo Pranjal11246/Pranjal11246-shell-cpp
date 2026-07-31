@@ -19,6 +19,7 @@
 #include <iomanip>
 #include "pipeline.hpp"
 #include "builtin.hpp"
+#include "history_manager.hpp"
 
 namespace fs= std::filesystem;
 using namespace std;
@@ -64,6 +65,8 @@ int main() {
       free(line);
 
       auto tokens = tokenize(input);
+
+      HistoryManager::add(input);
 
       bool hasPipe = std::find(tokens.begin(), tokens.end(), "|") != tokens.end();
       if(hasPipe){

@@ -9,6 +9,7 @@
 
 #include "completion_registry.hpp"
 #include "job_manager.hpp"
+#include "history_manager.hpp"
 
 namespace fs = std::filesystem;
 
@@ -20,7 +21,8 @@ bool isBuiltin(const std::string& command)
            command == "pwd"  ||
            command == "cd"   ||
            command == "jobs" ||
-           command == "complete";
+           command == "complete" ||
+           command == "history";
 }
 
 bool executeBuiltin(const std::vector<std::string>& tokens,bool& shouldExit)
@@ -222,6 +224,23 @@ bool executeBuiltin(const std::vector<std::string>& tokens,bool& shouldExit)
         return true;
 
       }
+
+      if(tokens[0]=="history"){
+
+        const auto& history = HistoryManager::history();
+
+        for(const auto& entry : history){
+
+            std::cout
+                << std::setw(5)
+                << entry.number
+                << "  "
+                << entry.command
+                << std::endl;
+        }
+
+        return true;
+    }
 
 return false;
 }
