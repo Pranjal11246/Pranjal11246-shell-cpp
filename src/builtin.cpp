@@ -10,8 +10,22 @@
 #include "completion_registry.hpp"
 #include "job_manager.hpp"
 #include "history_manager.hpp"
+#include "variable_manager.hpp"
 
 namespace fs = std::filesystem;
+
+namespace
+{
+    bool handleDeclarePrint(const std::vector<std::string>&);
+
+    bool handleDeclareAssignment(const std::vector<std::string>&);
+
+    bool handleDeclarePrintAll();
+
+    bool printVariable(const Variable& variable);
+
+    bool handleDeclareOptions(const std::vector<std::string>&);
+}
 
 bool isBuiltin(const std::string& command)
 {
@@ -282,10 +296,67 @@ bool executeBuiltin(const std::vector<std::string>& tokens,bool& shouldExit)
 return false;
 }
 
+bool handleDeclarePrint(const std::vector<std::string>& tokens)
+{
+    if(tokens.size() == 2){
+        return handleDeclarePrintAll();
+    }
+
+    if(tokens.size() != 3){
+        return true;
+    }
+
+    const Variable* variable = VariableManager::get(tokens[2]);
+
+    if(!variable){
+        std::cout
+            << "declare: "
+            << tokens[2]
+            << ": not found\n";
+        return true;
+    }
+
+    return printVariable(*variable);
+}
+
+bool handleDeclarePrintAll()
+{
+    auto variables = VariableManager::list();
+
+    for(const auto& variable : variables){
+        printVariable(variable);
+    }
+
+    return true;
+}
+
 bool builtinDeclare(const std::vector<std::string>& tokens)
 {
-    // Variable subsystem will be implemented in later stages.
-    (void)tokens;
+    if(tokens.size() == 1){
+        return handleDeclarePrintAll();
+    }
+    if(!tokens[1].empty() &&
+    (tokens[1][0] == '-' || tokens[1][0] == '+'))
+    {
+        return handleDeclareOptions(tokens);
+    }
+
+    return handleDeclareAssignment(tokens);
+}
+
+bool handleDeclareOptions(const std::vector<std::string>& tokens)
+{
+    if(tokens.empty() || tokens.size() < 2){
+        return true;
+    }
+
+    const std::string& option = tokens[1];
+
+    if(option == "-p"){
+        return handleDeclarePrint(tokens);
+    }
+
+
 
     return true;
 }
