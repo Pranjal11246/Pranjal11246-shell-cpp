@@ -20,6 +20,7 @@
 #include "pipeline.hpp"
 #include "builtin.hpp"
 #include "history_manager.hpp"
+#include "parameter_expansion.hpp"
 
 namespace fs= std::filesystem;
 using namespace std;

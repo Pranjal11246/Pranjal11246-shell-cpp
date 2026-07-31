@@ -8,7 +8,16 @@ resolveExpansion(const Expansion& expansion)
     switch(expansion.type)
     {
         case ExpansionType::Variable:
-            return VariableManager::get(expansion.value);
+        {
+            const Variable* variable = VariableManager::get(expansion.value);
+
+            if(variable != nullptr)
+            {
+                return variable->value;
+            }
+
+            return "";
+        }
 
         case ExpansionType::Special:
             return "";
