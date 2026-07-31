@@ -138,10 +138,40 @@ parseBracedExpansion(
     const std::string& token,
     size_t dollar)
 {
-    (void)token;
-    (void)dollar;
+    size_t start = dollar + 2; // Skip "${"
 
-    return std::nullopt;
+    if(start >= token.size())
+    {
+        return std::nullopt;
+    }
+
+    if(!(std::isalpha(static_cast<unsigned char>(token[start])) ||
+         token[start] == '_'))
+    {
+        return std::nullopt;
+    }
+
+    size_t end = start;
+
+    while(end < token.size() &&
+          (std::isalnum(static_cast<unsigned char>(token[end])) ||
+           token[end] == '_'))
+    {
+        ++end;
+    }
+
+    // Must end with '}'
+    if(end >= token.size() || token[end] != '}')
+    {
+        return std::nullopt;
+    }
+
+    return Expansion{
+        .type = ExpansionType::Variable,
+        .begin = dollar,
+        .end = end + 1, // include the closing '}'
+        .value = token.substr(start, end - start)
+    };
 }
 
 std::optional<Expansion>
