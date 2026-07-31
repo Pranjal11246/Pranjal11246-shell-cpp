@@ -395,6 +395,11 @@ bool handleDeclareAssignment(const std::vector<std::string>& tokens)
 
         if(!VariableManager::isValidName(name))
         {
+            std::cout
+                << "declare: `"
+                << declaration
+                << "': not a valid identifier\n";
+
             continue;
         }
 
