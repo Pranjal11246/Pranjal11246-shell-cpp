@@ -62,11 +62,21 @@ int main() {
       if (line == nullptr)break;
 
       std::string input(line);
+
+      if(HistoryManager::shouldExpand(input)){
+        input = HistoryManager::expand(input);
+      }
+
       free(line);
 
       auto tokens = tokenize(input);
 
+      if (tokens.empty()) {
+          continue;
+      }
+
       HistoryManager::add(input);
+      add_history(input.c_str());
 
       bool hasPipe = std::find(tokens.begin(), tokens.end(), "|") != tokens.end();
       if(hasPipe){
