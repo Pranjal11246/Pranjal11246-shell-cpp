@@ -296,6 +296,24 @@ bool executeBuiltin(const std::vector<std::string>& tokens,bool& shouldExit)
 return false;
 }
 
+
+
+bool builtinDeclare(const std::vector<std::string>& tokens)
+{
+    if(tokens.size() == 1){
+        return handleDeclarePrintAll();
+    }
+    if(!tokens[1].empty() &&
+    (tokens[1][0] == '-' || tokens[1][0] == '+'))
+    {
+        return handleDeclareOptions(tokens);
+    }
+
+    return handleDeclareAssignment(tokens);
+}
+
+namespace {
+    
 bool handleDeclarePrint(const std::vector<std::string>& tokens)
 {
     if(tokens.size() == 2){
@@ -330,20 +348,6 @@ bool handleDeclarePrintAll()
     return true;
 }
 
-bool builtinDeclare(const std::vector<std::string>& tokens)
-{
-    if(tokens.size() == 1){
-        return handleDeclarePrintAll();
-    }
-    if(!tokens[1].empty() &&
-    (tokens[1][0] == '-' || tokens[1][0] == '+'))
-    {
-        return handleDeclareOptions(tokens);
-    }
-
-    return handleDeclareAssignment(tokens);
-}
-
 bool handleDeclareOptions(const std::vector<std::string>& tokens)
 {
     if(tokens.empty() || tokens.size() < 2){
@@ -359,4 +363,23 @@ bool handleDeclareOptions(const std::vector<std::string>& tokens)
 
 
     return true;
+}
+
+bool printVariable(const Variable& variable)
+{
+    std::cout
+        << "declare -- "
+        << variable.name
+        << "=\""
+        << variable.value
+        << "\"\n";
+
+    return true;
+}
+
+bool handleDeclareAssignment(const std::vector<std::string>& tokens)
+{
+    (void)tokens;
+    return true;
+}
 }
