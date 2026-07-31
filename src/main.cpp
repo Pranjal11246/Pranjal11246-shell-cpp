@@ -32,6 +32,12 @@ int main() {
   // TODO: Uncomment the code below to pass the first stage
   
   rl_attempted_completion_function = completionCallback;
+
+  const char* histfile = std::getenv("HISTFILE");
+
+  if(histfile != nullptr){
+      HistoryManager::load(histfile);
+  }
   
   while(true){
 
