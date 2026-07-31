@@ -140,8 +140,15 @@ int main() {
               outFile.close();
           }
 
-          if (shouldExit)
+          if (shouldExit){
+                const char* histfile = std::getenv("HISTFILE");
+
+              if(histfile != nullptr){
+                  HistoryManager::save(histfile);
+              }
+
               break;
+          }
 
           continue;
       }
