@@ -76,6 +76,7 @@ int main() {
       free(line);
 
       auto tokens = tokenize(input);
+      expandParameters(tokens);
 
       if (tokens.empty()) {
           continue;

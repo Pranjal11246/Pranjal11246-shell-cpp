@@ -1,0 +1,19 @@
+// ============================================================================
+// Expansion
+//
+// Represents a single shell expansion parsed from a token.
+//
+// Examples:
+//     $HOME          -> Variable("HOME")
+//     ${HOME}        -> Variable("HOME")
+//     $?             -> Special("?")
+//     $$             -> Special("$")
+//     $(pwd)         -> Command("pwd")
+//     $((2+3))       -> Arithmetic("2+3")
+//
+// begin:
+//     Index of '$'.
+//
+// end:
+//     One-past-the-last character belonging to the expansion.
+// ============================================================================
