@@ -229,13 +229,24 @@ bool executeBuiltin(const std::vector<std::string>& tokens,bool& shouldExit)
 
         const auto& history = HistoryManager::history();
 
-        for(const auto& entry : history){
+        int start = 0;
+
+        if(tokens.size()==2){
+
+            int count = std::stoi(tokens[1]);
+
+            if(count < static_cast<int>(history.size())){
+                start = static_cast<int>(history.size()) - count;
+            }
+        }
+
+        for(int i=start;i<history.size();i++){
 
             std::cout
                 << std::setw(5)
-                << entry.number
+                << history[i].number
                 << "  "
-                << entry.command
+                << history[i].command
                 << std::endl;
         }
 

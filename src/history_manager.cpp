@@ -24,3 +24,24 @@ void HistoryManager::clear()
 {
     historyList.clear();
 }
+
+const HistoryEntry* HistoryManager::get(int number)
+{
+    for(const auto& entry : historyList){
+
+        if(entry.number==number){
+            return &entry;
+        }
+    }
+
+    return nullptr;
+}
+
+const HistoryEntry* HistoryManager::last()
+{
+    if(historyList.empty()){
+        return nullptr;
+    }
+
+    return &historyList.back();
+}

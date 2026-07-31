@@ -15,5 +15,8 @@ namespace HistoryManager
 
     const std::vector<HistoryEntry>& history();
 
+    const HistoryEntry* get(int number);
+    const HistoryEntry* last();
+
     void clear();
 }
