@@ -225,13 +225,34 @@ bool executeBuiltin(const std::vector<std::string>& tokens,bool& shouldExit)
 
       }
 
-      if(tokens[0]=="history"){
+      if(tokens[0] == "history"){
+
+        if(tokens.size() == 3 && tokens[1] == "-r"){
+
+            HistoryManager::load(tokens[2]);
+
+            return true;
+        }
+
+        if(tokens.size() == 3 && tokens[1] == "-w"){
+
+            HistoryManager::save(tokens[2]);
+
+            return true;
+        }
+
+        if(tokens.size() == 3 && tokens[1] == "-a"){
+
+            HistoryManager::append(tokens[2]);
+
+            return true;
+        }
 
         const auto& history = HistoryManager::history();
 
         int start = 0;
 
-        if(tokens.size()==2){
+        if(tokens.size() == 2){
 
             int count = std::stoi(tokens[1]);
 
@@ -240,14 +261,14 @@ bool executeBuiltin(const std::vector<std::string>& tokens,bool& shouldExit)
             }
         }
 
-        for(int i=start;i<history.size();i++){
+        for(int i = start; i < static_cast<int>(history.size()); i++){
 
             std::cout
                 << std::setw(5)
                 << history[i].number
                 << "  "
                 << history[i].command
-                << std::endl;
+                << '\n';
         }
 
         return true;

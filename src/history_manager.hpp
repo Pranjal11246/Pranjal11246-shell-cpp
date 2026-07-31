@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 
+
 struct HistoryEntry
 {
     int number;
@@ -25,13 +26,16 @@ namespace HistoryManager
 
     int size();
 
-    void load();
-
-    void save();
 
     void clear();
 
     bool shouldExpand(const std::string& input);
 
     std::string expand(const std::string& input);
+
+    bool load(const std::string& path);
+
+    bool save(const std::string& path);
+
+    bool append(const std::string& path);
 }
