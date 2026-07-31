@@ -379,7 +379,28 @@ bool printVariable(const Variable& variable)
 
 bool handleDeclareAssignment(const std::vector<std::string>& tokens)
 {
-    (void)tokens;
+    for(size_t i = 1; i < tokens.size(); ++i)
+    {
+        const std::string& declaration = tokens[i];
+
+        size_t equalsPos = declaration.find('=');
+
+        if(equalsPos == std::string::npos)
+        {
+            continue;
+        }
+
+        std::string name = declaration.substr(0, equalsPos);
+        std::string value = declaration.substr(equalsPos + 1);
+
+        if(!VariableManager::isValidName(name))
+        {
+            continue;
+        }
+
+        VariableManager::set(name, value);
+    }
+
     return true;
 }
 }
