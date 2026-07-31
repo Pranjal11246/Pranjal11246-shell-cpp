@@ -79,6 +79,15 @@ int main() {
       auto tokens = tokenize(input);
       expandParameters(tokens);
 
+      tokens.erase(
+        std::remove_if(
+        tokens.begin() + 1,
+        tokens.end(),
+        [](const std::string& token)
+        {
+            return token.empty();
+        }), tokens.end());
+
       if (tokens.empty()) {
           continue;
       }
