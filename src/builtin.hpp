@@ -9,3 +9,5 @@ bool executeBuiltin(
     const std::vector<std::string>& tokens,
     bool& shouldExit
 );
+
+bool builtinDeclare(const std::vector<std::string>& tokens);

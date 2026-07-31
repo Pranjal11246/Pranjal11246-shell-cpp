@@ -22,7 +22,8 @@ bool isBuiltin(const std::string& command)
            command == "cd"   ||
            command == "jobs" ||
            command == "complete" ||
-           command == "history";
+           command == "history" ||
+           command == "declare";
 }
 
 bool executeBuiltin(const std::vector<std::string>& tokens,bool& shouldExit)
@@ -274,5 +275,17 @@ bool executeBuiltin(const std::vector<std::string>& tokens,bool& shouldExit)
         return true;
     }
 
+    if(tokens[0] == "declare") {
+        return builtinDeclare(tokens);
+    }
+
 return false;
+}
+
+bool builtinDeclare(const std::vector<std::string>& tokens)
+{
+    // Variable subsystem will be implemented in later stages.
+    (void)tokens;
+
+    return true;
 }
