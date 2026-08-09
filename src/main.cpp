@@ -40,9 +40,9 @@ int main() {
       HistoryManager::load(histfile);
   }
   
-  while(true){
+  while(true){         //RELP LOOP INITIATION
 
-    auto finished = JobManager::reapFinishedJobs();
+    auto finished = JobManager::reapFinishedJobs();  // extracting finished jobs using job manager
 
     for (const auto& reaped : finished)
     {
